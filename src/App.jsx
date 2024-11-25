@@ -1,32 +1,64 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-const colorArr = ['black', 'white'];
+const rowNum = 32, colNum = 32;
+let currentX = 0, currentY = 0;
 
 function App() {
-  const [color, setColor] = useState(0);
-  useEffect(() => {
-    const inter = setTimeout(() => {
-      setColor((color + 1) % colorArr.length);
-    }, 50);
+  const [reload, doReload] = useState({});
 
-    return () => clearTimeout(inter);
-  })
+  useEffect(() => {
+    document.addEventListener("keyup",
+      (evt) => {
+        const k = evt.key;
+        console.log(k);
+        switch (k) {
+          case "ArrowUp":
+            currentY = (currentY + rowNum - 1) % rowNum;
+            break;
+          case "ArrowDown":
+            currentY = (currentY + 1) % rowNum;
+            break;
+          case "ArrowLeft":
+            currentX = (currentX + rowNum - 1) % rowNum;
+            break;
+          case "ArrowRight":
+            currentX = (currentX + 1) % rowNum;
+            break;
+        }
+        doReload({});
+      }
+    )
+
+    return (() => { document.removeEventListener("keyup", document.removeEventListener)});
+  });
+
+  let table = [];
+  for (let i = 0; i < rowNum; i++) {
+    let row = [];
+    for (let j = 0; j < colNum; j++) row.push((i == currentY && j == currentX ? 'current' : ((i + j) % 2 != 0 ? 'black' : 'white')));
+    table.push(row);
+  }
 
   return (
     <>
-      <div style={
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        maxWidth: "100vw",
+        maxHeight: "100vh",
+      }}>
         {
-          width: "80vw",
-          height: "80vh",
-          backgroundColor: colorArr[color],
+          table.map((rowArr, ind) => (
+            <div key={ind} style={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}>
+              {rowArr.map((cl, ind) => (
+                <div key={ind} className={cl} style={{ width: "30px", height: "30px", }}></div>
+              ))}
+            </div>
+          ))
         }
-      }>
-        <button onClick={() => {setColor((color + 1) % colorArr.length)}}>
-          MMB
-        </button>
       </div>
     </>
   )
