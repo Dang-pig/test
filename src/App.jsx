@@ -1,42 +1,65 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const rowNum = 32, colNum = 32;
-let currentX = 0, currentY = 0;
+const rowNum = 100, colNum = 100;
+let currentX = 0, currentY = 0, accX = 0, accY = 0;
 
 function App() {
   const [reload, doReload] = useState({});
 
   useEffect(() => {
-    document.addEventListener("keyup",
-      (evt) => {
-        const k = evt.key;
-        console.log(k);
-        switch (k) {
-          case "ArrowUp":
-            currentY = (currentY + rowNum - 1) % rowNum;
-            break;
-          case "ArrowDown":
-            currentY = (currentY + 1) % rowNum;
-            break;
-          case "ArrowLeft":
-            currentX = (currentX + rowNum - 1) % rowNum;
-            break;
-          case "ArrowRight":
-            currentX = (currentX + 1) % rowNum;
-            break;
-        }
-        doReload({});
+    const addAcc = function (evt) {
+      const k = evt.key;
+      switch (k) {
+        case "ArrowUp":
+          accY = -1;
+          break;
+        case "ArrowDown":
+          accY = 1;
+          break;
+        case "ArrowLeft":
+          accX = -1;
+          break;
+        case "ArrowRight":
+          accX = 1;
+          break;
       }
-    )
+    }
 
-    return (() => { document.removeEventListener("keyup", document.removeEventListener)});
+    const removeAcc = function (evt) {
+      const k = evt.key;
+      switch (k) {
+        case "ArrowUp":
+          accY = 0;
+          break;
+        case "ArrowDown":
+          accY = 0;
+          break;
+        case "ArrowLeft":
+          accX = 0;
+          break;
+        case "ArrowRight":
+          accX = 0;
+          break;
+      }
+    }
+
+    let inter = setInterval(() => {
+      currentX = (currentX + accX + colNum) % colNum;
+      currentY = (currentY + accY + rowNum) % rowNum;
+      doReload({});
+    }, 1);
+
+    document.addEventListener("keydown", addAcc);
+    document.addEventListener("keyup", removeAcc);
+
+    return (() => { document.removeEventListener("keydown", addAcc), document.removeEventListener("keyup", removeAcc) });
   });
 
   let table = [];
   for (let i = 0; i < rowNum; i++) {
     let row = [];
-    for (let j = 0; j < colNum; j++) row.push((i == currentY && j == currentX ? 'current' : ((i + j) % 2 != 0 ? 'black' : 'white')));
+    for (let j = 0; j < colNum; j++) row.push((i == currentY && j == currentX ? 'current' : ((i + j) % 1 != 0 ? 'black' : 'white')));
     table.push(row);
   }
 
@@ -54,7 +77,7 @@ function App() {
               flexDirection: 'row',
             }}>
               {rowArr.map((cl, ind) => (
-                <div key={ind} className={cl} style={{ width: "30px", height: "30px", }}></div>
+                <div key={ind} className={cl} style={{ width: "5px", height: "5px", }}></div>
               ))}
             </div>
           ))
