@@ -3,6 +3,8 @@ import './App.css'
 
 let currentX = 0, currentY = 0, accX = 0, accY = 0;
 
+let lp = 0, rp = 0, up = 0, dp = 0;
+
 function App() {
   const [reload, doReload] = useState({});
   const [rowcol, setRowCol] = useState([50, 50]);
@@ -14,16 +16,16 @@ function App() {
       const k = evt.key;
       switch (k) {
         case "ArrowUp":
-          accY = -1;
+          up = 1;
           break;
         case "ArrowDown":
-          accY = 1;
+          dp = 1;
           break;
         case "ArrowLeft":
-          accX = -1;
+          lp = 1;
           break;
         case "ArrowRight":
-          accX = 1;
+          rp = 1;
           break;
       }
     }
@@ -32,16 +34,16 @@ function App() {
       const k = evt.key;
       switch (k) {
         case "ArrowUp":
-          accY = 0;
+          up = 0;
           break;
         case "ArrowDown":
-          accY = 0;
+          dp = 0;
           break;
         case "ArrowLeft":
-          accX = 0;
+          lp = 0;
           break;
         case "ArrowRight":
-          accX = 0;
+          rp = 0;
           break;
       }
     }
@@ -49,8 +51,11 @@ function App() {
     let inter = setInterval(() => {
       // console.log(rowNum);
       // console.log(colNum);
-      
-      if(rowNum != 0 && colNum != 0){
+
+      accX = rp - lp;
+      accY = dp - up;
+
+      if (rowNum != 0 && colNum != 0) {
         currentX = (currentX + accX + colNum) % colNum;
         currentY = (currentY + accY + rowNum) % rowNum;
         doReload({});
@@ -60,7 +65,7 @@ function App() {
     document.addEventListener("keydown", addAcc);
     document.addEventListener("keyup", removeAcc);
 
-    return (() => { document.removeEventListener("keydown", addAcc), document.removeEventListener("keyup", removeAcc), clearInterval(inter)});
+    return (() => { document.removeEventListener("keydown", addAcc), document.removeEventListener("keyup", removeAcc), clearInterval(inter) });
   });
 
   let table = [];
@@ -75,8 +80,8 @@ function App() {
       <div style={{
         margin: "2rem",
       }}>
-        <h3>Row number: </h3><input type="number" value={parseInt(rowNum)} onChange={(e) => {setRowCol([e.target.value !== "" ? parseInt(e.target.value) : 0, colNum])}} id='rowNumInput'/>
-        <h3>Column number: </h3><input type="number" value={parseInt(colNum)} onChange={(e) => {setRowCol([rowNum, e.target.value !== "" ? parseInt(e.target.value) : 0])}} id='colNumInput'/>
+        <h3>Row number: </h3><input type="number" value={parseInt(rowNum)} onChange={(e) => { setRowCol([e.target.value !== "" ? parseInt(e.target.value) : 0, colNum]) }} id='rowNumInput' />
+        <h3>Column number: </h3><input type="number" value={parseInt(colNum)} onChange={(e) => { setRowCol([rowNum, e.target.value !== "" ? parseInt(e.target.value) : 0]) }} id='colNumInput' />
       </div>
       <div style={{
         display: 'flex', flexDirection: 'column',
