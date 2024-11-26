@@ -55,7 +55,7 @@ function App() {
         currentY = (currentY + accY + rowNum) % rowNum;
         doReload({});
       }
-    }, 10);
+    }, 1);
 
     document.addEventListener("keydown", addAcc);
     document.addEventListener("keyup", removeAcc);
