@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const rowNum = 100, colNum = 100;
 let currentX = 0, currentY = 0, accX = 0, accY = 0;
 
 function App() {
   const [reload, doReload] = useState({});
+  const [rowcol, setRowCol] = useState([50, 50]);
+
+  const rowNum = rowcol[0], colNum = rowcol[1];
 
   useEffect(() => {
     const addAcc = function (evt) {
@@ -45,15 +47,20 @@ function App() {
     }
 
     let inter = setInterval(() => {
-      currentX = (currentX + accX + colNum) % colNum;
-      currentY = (currentY + accY + rowNum) % rowNum;
-      doReload({});
-    }, 1);
+      // console.log(rowNum);
+      // console.log(colNum);
+      
+      if(rowNum != 0 && colNum != 0){
+        currentX = (currentX + accX + colNum) % colNum;
+        currentY = (currentY + accY + rowNum) % rowNum;
+        doReload({});
+      }
+    }, 10);
 
     document.addEventListener("keydown", addAcc);
     document.addEventListener("keyup", removeAcc);
 
-    return (() => { document.removeEventListener("keydown", addAcc), document.removeEventListener("keyup", removeAcc) });
+    return (() => { document.removeEventListener("keydown", addAcc), document.removeEventListener("keyup", removeAcc), clearInterval(inter)});
   });
 
   let table = [];
@@ -65,6 +72,12 @@ function App() {
 
   return (
     <>
+      <div style={{
+        margin: "2rem",
+      }}>
+        <h3>Row number: </h3><input type="number" value={parseInt(rowNum)} onChange={(e) => {setRowCol([e.target.value !== "" ? parseInt(e.target.value) : 0, colNum])}} id='rowNumInput'/>
+        <h3>Column number: </h3><input type="number" value={parseInt(colNum)} onChange={(e) => {setRowCol([rowNum, e.target.value !== "" ? parseInt(e.target.value) : 0])}} id='colNumInput'/>
+      </div>
       <div style={{
         display: 'flex', flexDirection: 'column',
         maxWidth: "100vw",
